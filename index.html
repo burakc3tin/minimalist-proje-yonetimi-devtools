@@ -1,0 +1,3592 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proje Yönetimi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
+  <style>
+    :root {
+      --bg: #080810;
+      --bg2: #0e0e1a;
+      --bg3: #14142a;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #e8e8f0;
+      --muted: #6b6b8a;
+      --green: #00ffaa;
+      --yellow: #ffcc00;
+      --pink: #ff3d9a;
+      --blue: #3d8dff;
+      --orange: #ff7b3d;
+      --purple: #b46dff;
+      --red: #ff4d4d;
+      --green-dim: rgba(0, 255, 170, 0.12);
+      --yellow-dim: rgba(255, 204, 0, 0.12);
+      --pink-dim: rgba(255, 61, 154, 0.12);
+      --blue-dim: rgba(61, 141, 255, 0.12);
+      --orange-dim: rgba(255, 123, 61, 0.12);
+      --purple-dim: rgba(180, 109, 255, 0.12);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── GRID BG ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GLOW ORBS ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+
+    .orb1 {
+      width: 500px;
+      height: 500px;
+      background: var(--purple);
+      top: -150px;
+      left: -150px;
+      animation-delay: 0s;
+    }
+
+    .orb2 {
+      width: 400px;
+      height: 400px;
+      background: var(--pink);
+      bottom: -100px;
+      right: -100px;
+      animation-delay: -5s;
+    }
+
+    .orb3 {
+      width: 300px;
+      height: 300px;
+      background: var(--blue);
+      top: 40%;
+      left: 50%;
+      animation-delay: -8s;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    @keyframes orbFloat {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -40px) scale(1.05);
+      }
+
+      66% {
+        transform: translate(-20px, 30px) scale(0.95);
+      }
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 16px 80px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 48px 0 32px;
+      text-align: center;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .logo-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .logo-icon {
+      font-size: 2.4rem;
+    }
+
+    h1 {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(2.2rem, 8vw, 4rem);
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--green) 0%, var(--blue) 40%, var(--purple) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .tagline {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 24px 0 32px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      font-size: 0.75rem;
+      font-weight: 700;
+      transition: transform 0.2s;
+      cursor: default;
+    }
+
+    .stat-pill:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .stat-pill .num {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.1rem;
+    }
+
+    .dot-green {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .dot-yellow {
+      background: var(--yellow);
+      box-shadow: 0 0 8px var(--yellow);
+    }
+
+    .dot-blue {
+      background: var(--blue);
+      box-shadow: 0 0 8px var(--blue);
+    }
+
+    .dot-pink {
+      background: var(--pink);
+      box-shadow: 0 0 8px var(--pink);
+    }
+
+    /* ── FILTER TABS ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .filter-btn:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text);
+    }
+
+    .filter-btn.active {
+      background: var(--bg3);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ── ADD PROJECT BTN ── */
+    .add-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-bottom: 28px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .add-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-dim);
+      box-shadow: 0 0 24px rgba(0, 255, 170, 0.1);
+    }
+
+    .add-btn i {
+      font-size: 1rem;
+    }
+
+    /* ── KANBAN BOARD ── */
+    #projects-grid {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-top: 20px;
+      overflow-x: auto;
+      padding-bottom: 24px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    .kanban-column {
+      flex: 1;
+      min-width: 320px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: background 0.3s;
+    }
+
+    .kanban-column:hover {
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .kanban-column.drag-over {
+      border-color: var(--blue);
+      border-style: dashed;
+      background: rgba(61, 141, 255, 0.05);
+      position: relative;
+    }
+
+    .kanban-column.drag-over::after {
+      content: 'BURAYA BIRAK';
+      position: absolute;
+      inset: 0;
+      background: rgba(14, 14, 26, 0.85);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      border-radius: 18px;
+      z-index: 50;
+      pointer-events: none;
+      animation: popIn 0.2s ease-out;
+      font-family: 'Luckiest Guy', cursive;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+
+    .column-title {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.1rem;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+
+    .column-count {
+      background: var(--bg3);
+      padding: 2px 10px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--border);
+    }
+
+    .planned-col {
+      border-top: 3px solid var(--blue);
+    }
+
+    .progress-col {
+      border-top: 3px solid var(--yellow);
+    }
+
+    .done-col {
+      border-top: 3px solid var(--green);
+    }
+
+    .updated-col {
+      border-top: 3px solid var(--purple);
+    }
+
+    .planned-text {
+      color: var(--blue);
+    }
+
+    .progress-text {
+      color: var(--yellow);
+    }
+
+    .done-text-title {
+      color: var(--green);
+    }
+
+    .updated-text {
+      color: var(--purple);
+    }
+
+    /* ── PROJECT CARD ── */
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+      animation: slideIn 0.4s ease both;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px;
+      position: relative;
+    }
+
+    .card-header:hover .project-name {
+      opacity: 0.85;
+    }
+
+    .status-badge {
+      flex-shrink: 0;
+      padding: 4px 11px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .badge-done {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 170, 0.3);
+    }
+
+    .badge-progress {
+      background: var(--yellow-dim);
+      color: var(--yellow);
+      border: 1px solid rgba(255, 204, 0, 0.3);
+    }
+
+    .badge-planned {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border: 1px solid rgba(61, 141, 255, 0.3);
+    }
+
+    .badge-updated {
+      background: var(--purple-dim);
+      color: var(--purple);
+      border: 1px solid rgba(180, 109, 255, 0.3);
+    }
+
+    .project-name {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      letter-spacing: 1.5px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg3);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .icon-btn.del:hover {
+      background: rgba(255, 77, 77, 0.15);
+      color: var(--red);
+      border-color: rgba(255, 77, 77, 0.3);
+    }
+
+    .icon-btn.edit:hover {
+      background: rgba(61, 141, 255, 0.15);
+      color: var(--blue);
+      border-color: rgba(61, 141, 255, 0.3);
+    }
+
+    .chevron {
+      display: none;
+    }
+
+    /* ── VIEW MODAL SPECIFIC ── */
+    .view-modal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .view-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .view-modal-title-area {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .view-modal-name {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+      color: var(--text);
+    }
+
+    .view-modal-name:focus {
+      outline: none;
+    }
+
+    .view-modal-status {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .view-modal-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    /* ── MINI STATUS PICKER ── */
+    .status-picker {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 180px;
+      animation: slideIn 0.2s ease-out;
+    }
+
+    .picker-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .picker-item:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .picker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* feature status picker overrides (REMOVED) */
+    .feature-item {
+      position: relative;
+      cursor: grab;
+    }
+
+    .feature-item:active {
+      cursor: grabbing;
+    }
+
+    .feature-item.dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+
+    .view-fullscreen {
+      max-width: 1000px !important;
+      height: 90vh;
+      padding-bottom: 12px !important;
+    }
+
+    .view-modal-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 1000px) {
+      .view-fullscreen {
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+      }
+
+      .modal-overlay {
+        padding: 0;
+      }
+    }
+
+    .modal-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+      margin-right: -8px;
+    }
+
+    .modal-scroll-area::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    .view-modal-footer {
+      text-align: center;
+      padding: 8px 0 0 0;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+    }
+
+    .created-at-info {
+      font-size: 0.65rem;
+      color: var(--muted);
+      opacity: 0.6;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── CARD BODY (DEPRECATED) ── */
+    .card-body {
+      display: none;
+    }
+
+    .card-inner {
+      padding: 0 20px 18px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    /* description */
+    .project-desc {
+      color: var(--text);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--bg3);
+      padding: 8px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      min-height: 36px;
+      max-height: 200px;
+      overflow-y: auto;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      text-align: left;
+    }
+
+    .project-desc::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .project-desc::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    .project-desc.editing {
+      padding: 0;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(61, 141, 255, 0.1);
+    }
+
+    .desc-edit-area {
+      width: 100%;
+      min-height: 36px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      padding: 8px 12px;
+      outline: none;
+      resize: none;
+      display: block;
+      overflow: hidden;
+    }
+
+    /* ── FEATURES ── */
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      animation: feadeIn 0.3s ease both;
+      transition: background 0.2s;
+    }
+
+    .feature-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    @keyframes feadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .feature-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: transparent;
+    }
+
+    .feature-check.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: #000;
+      box-shadow: 0 0 10px rgba(0, 255, 170, 0.4);
+    }
+
+    .feature-check:hover {
+      border-color: var(--green);
+    }
+
+    .feature-tag {
+      font-size: 0.6rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .tag-eksik {
+      background: rgba(255, 77, 77, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(255, 77, 77, 0.25);
+    }
+
+    .tag-yapildi {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 170, 0.25);
+    }
+
+    .tag-yapilacak {
+      background: var(--orange-dim);
+      color: var(--orange);
+      border: 1px solid rgba(255, 123, 61, 0.25);
+    }
+
+    .feature-text {
+      flex: 1;
+      font-size: 0.78rem;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .feature-text.done-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .feat-del {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .feature-item:hover .feat-del {
+      color: var(--muted);
+    }
+
+    .feat-del:hover {
+      background: rgba(255, 77, 77, 0.15);
+      color: var(--red) !important;
+    }
+
+    /* ── INTERNAL KANBAN (FEATURES) ── */
+    .feat-kanban-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+      align-items: flex-start;
+    }
+
+    .feat-col {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 100px;
+      position: relative;
+      transition: all 0.2s;
+      min-width: 0;
+      overflow: visible;
+    }
+
+    .feat-col.drag-over {
+      border-color: var(--blue);
+      border-style: dashed;
+      background: rgba(61, 141, 255, 0.05);
+    }
+
+    .feat-col.drag-over::after {
+      content: 'BURAYA BIRAK';
+      position: absolute;
+      inset: 0;
+      background: rgba(14, 14, 26, 0.85);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      border-radius: 12px;
+      z-index: 50;
+      pointer-events: none;
+      animation: popIn 0.2s ease-out;
+    }
+
+    .feat-col-header {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+
+    .feat-col-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .feature-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      transition: all 0.2s;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-item.editing {
+      border-color: var(--blue);
+      background: rgba(61, 141, 255, 0.08);
+      box-shadow: 0 0 15px rgba(61, 141, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    .feat-edit-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: inherit;
+      padding: 0;
+    }
+
+    .feature-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      color: transparent;
+    }
+
+    .feature-check:hover {
+      border-color: var(--blue);
+      background: var(--blue-dim);
+      transform: scale(1.1);
+    }
+
+    .feature-check.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 255, 170, 0.4);
+    }
+
+    .feature-text {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.78rem;
+      cursor: inherit;
+      pointer-events: none;
+    }
+
+    .feature-text.done-text {
+      text-decoration: line-through;
+      opacity: 0.4;
+    }
+
+    @media (max-width: 600px) {
+      .feat-kanban-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* add feature row */
+    .feat-input-group {
+      display: flex;
+      align-items: center;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 100;
+    }
+
+    .feat-input-group:focus-within {
+      border-color: rgba(61, 141, 255, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .feat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .feat-input::placeholder {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .feat-input-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-right: 6px;
+      opacity: 0;
+      transform: scale(0.9) translateX(10px);
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 0;
+      overflow: hidden;
+    }
+
+    .feat-input-group.active .feat-input-actions {
+      opacity: 1;
+      transform: scale(1) translateX(0);
+      pointer-events: all;
+      width: auto;
+      overflow: visible;
+    }
+
+    .feat-tag-sel {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b6b8a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+
+    .feat-tag-sel:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--bg3);
+    }
+
+    .feat-tag-sel option {
+      background: var(--bg2);
+    }
+
+    /* ── CUSTOM TAG & PRIORITY DROPDOWN ── */
+    .custom-tag-wrap {
+      position: relative;
+    }
+
+    .tag-trigger {
+      height: 32px;
+      padding: 0 32px 0 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+      min-width: 180px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b6b8a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .tag-trigger:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--bg3);
+      color: var(--text);
+    }
+
+    .tag-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 80px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 160px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+      animation: slideDown 0.2s ease-out;
+      backdrop-filter: blur(15px);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tag-menu.open {
+      display: flex;
+    }
+
+    .tag-opt {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+      color: var(--muted);
+      position: relative;
+    }
+
+    .tag-opt:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .tag-opt i.fa-chevron-right {
+      font-size: 0.6rem;
+      opacity: 0.5;
+    }
+
+    .prio-sub-menu {
+      position: absolute;
+      left: 100%;
+      top: -6px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 110px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(15px);
+      z-index: 2100;
+      /* Bridge to prevent hover loss */
+      padding-left: 10px;
+      margin-left: -4px;
+    }
+
+    .tag-opt.yapilacak:hover .prio-sub-menu {
+      display: flex;
+    }
+
+    .prio-sub-opt {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.65rem;
+      transition: all 0.2s;
+    }
+
+    .prio-sub-opt:hover {
+      background: var(--bg);
+    }
+
+    .prio-sub-opt.rahat {
+      color: #ffcaad;
+    }
+
+    .prio-sub-opt.orta {
+      color: #ff9d6d;
+    }
+
+    .prio-sub-opt.ciddi {
+      color: #ff6a2a;
+    }
+
+    /* Feature Item Backgrounds (Priority Tones) - ONLY IN YAPILACAK COLUMN */
+    .col-yapilacak .feature-item.prio-rahat {
+      background: rgba(255, 123, 61, 0.08) !important;
+      border-color: rgba(255, 123, 61, 0.15) !important;
+    }
+
+    .col-yapilacak .feature-item.prio-orta {
+      background: rgba(255, 123, 61, 0.18) !important;
+      border-color: rgba(255, 123, 61, 0.25) !important;
+    }
+
+    .col-yapilacak .feature-item.prio-ciddi {
+      background: rgba(255, 123, 61, 0.35) !important;
+      border-color: rgba(255, 123, 61, 0.45) !important;
+    }
+
+    /* Modal Priority Picker */
+    .modal-prio-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-prio-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .modal-prio-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-prio-btn {
+      padding: 6px 14px;
+      font-size: 0.7rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-prio-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+
+    .modal-prio-btn.active.rahat {
+      background: rgba(255, 202, 173, 0.15);
+      border-color: #ffcaad;
+      color: #ffcaad;
+      box-shadow: 0 0 15px rgba(255, 202, 173, 0.2);
+    }
+
+    .modal-prio-btn.active.orta {
+      background: rgba(255, 157, 109, 0.15);
+      border-color: #ff9d6d;
+      color: #ff9d6d;
+      box-shadow: 0 0 15px rgba(255, 157, 109, 0.2);
+    }
+
+    .modal-prio-btn.active.ciddi {
+      background: rgba(255, 106, 42, 0.15);
+      border-color: #ff6a2a;
+      color: #ff6a2a;
+      box-shadow: 0 0 15px rgba(255, 106, 42, 0.2);
+    }
+
+
+    .feat-add-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: none;
+      background: var(--blue);
+      color: #fff;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(61, 141, 255, 0.3);
+    }
+
+    .feat-add-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    .feat-add-btn:active {
+      transform: scale(0.95);
+    }
+
+    .feat-add-btn:hover {
+      background: rgba(0, 255, 170, 0.2);
+      box-shadow: 0 0 12px rgba(0, 255, 170, 0.15);
+    }
+
+    /* progress bar */
+    .progress-wrap {
+      margin: 12px 0 16px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-bg {
+      height: 4px;
+      border-radius: 4px;
+      background: var(--bg3);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 8px rgba(0, 255, 170, 0.4);
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 500px;
+      transform: translateY(30px) scale(0.97);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-title {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b6b8a' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: calc(100% - 24px) center;
+      background-size: 10px;
+      cursor: pointer;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 0 3px rgba(61, 141, 255, 0.1);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--muted);
+    }
+
+    .form-select option {
+      background: var(--bg3);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      color: #000;
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(0, 255, 170, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 255, 170, 0.35);
+    }
+
+    .btn-cancel {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text);
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
+      opacity: 0.4;
+    }
+
+    .empty-state p {
+      font-size: 0.8rem;
+      line-height: 1.8;
+    }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s ease both;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast.out {
+      animation: toastOut 0.3s ease forwards;
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+    }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s 0.15s ease both;
+      z-index: 50;
+    }
+
+    .search-wrap i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 140px 12px 38px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 3px rgba(180, 109, 255, 0.1);
+    }
+
+    .search-input::placeholder {
+      color: var(--muted);
+    }
+
+    /* ── DATE FILTER UI ── */
+    .filter-trigger {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%) scale(0.9);
+      padding: 6px 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .search-wrap:focus-within .filter-trigger,
+    .filter-trigger.active {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      pointer-events: all;
+    }
+
+    .filter-trigger:hover {
+      background: var(--bg2);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-trigger i {
+      font-size: 0.8rem;
+      color: var(--blue);
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      width: 220px;
+      z-index: 100;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      display: none;
+      animation: slideIn 0.2s ease-out;
+      backdrop-filter: blur(15px);
+    }
+
+    .filter-dropdown.open {
+      display: block;
+    }
+
+    .filter-opt {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+
+    .filter-opt:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .filter-opt.active {
+      color: var(--blue);
+      background: rgba(61, 141, 255, 0.08);
+    }
+
+    .filter-opt.active::after {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 0.7rem;
+      margin-left: 8px;
+    }
+
+    /* ── SEARCH RESULTS BADGE ── */
+    #search-results-container {
+      display: none;
+      justify-content: center;
+      margin-top: -18px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .results-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, rgba(61, 141, 255, 0.1), rgba(180, 109, 255, 0.1));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .results-badge .count {
+      color: var(--blue);
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 0.9rem;
+    }
+
+    .results-badge .clear-search {
+      margin-left: 6px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .results-badge .clear-search:hover {
+      color: var(--red);
+    }
+
+    /* ── CUSTOM CALENDAR MODAL ── */
+    #calendar-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .calendar-container {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 380px;
+      padding: 24px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .cal-title {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .cal-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .cal-nav-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .cal-nav-btn:hover {
+      background: var(--bg);
+      border-color: var(--blue);
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .cal-weekday {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 8px 0;
+      text-transform: uppercase;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .cal-day:hover:not(.empty) {
+      background: var(--bg3);
+      border-color: var(--border);
+    }
+
+    .cal-day.today {
+      color: var(--blue);
+      font-weight: 700;
+      background: rgba(61, 141, 255, 0.1);
+    }
+
+    .cal-day.selected {
+      background: var(--blue) !important;
+      color: #000 !important;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(61, 141, 255, 0.4);
+    }
+
+    .cal-day.empty {
+      cursor: default;
+    }
+
+    .cal-footer {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .cal-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .cal-btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .cal-btn-apply {
+      background: var(--blue);
+      border: none;
+      color: #000;
+    }
+
+    /* ── ANIMS ── */
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ── TRASH ZONE ── */
+    .trash-zone {
+      position: fixed;
+      top: -120px;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background: rgba(255, 77, 77, 0.1);
+      border-bottom: 2px solid rgba(255, 77, 77, 0.2);
+      backdrop-filter: blur(15px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      color: var(--red);
+      font-family: 'Luckiest Guy', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      z-index: 2000;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .trash-zone.visible {
+      top: 0;
+      opacity: 1;
+      pointer-events: all;
+      box-shadow: 0 10px 40px rgba(255, 77, 77, 0.15);
+    }
+
+    .trash-zone.drag-over {
+      background: rgba(255, 77, 77, 0.9);
+      color: #fff;
+      height: 130px;
+      font-size: 1.8rem;
+      box-shadow: 0 20px 60px rgba(255, 77, 77, 0.4);
+    }
+
+    .trash-zone i {
+      font-size: 2rem;
+      transition: transform 0.3s;
+    }
+
+    .trash-zone.drag-over i {
+      transform: scale(1.3) rotate(-10deg);
+    }
+
+    .trash-zone * {
+      pointer-events: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header {
+        padding: 32px 0 20px;
+      }
+
+      .modal {
+        padding: 24px 18px;
+      }
+
+      .card-header {
+        padding: 14px 14px 12px;
+        gap: 8px;
+      }
+
+      .card-inner {
+        padding: 0 14px 14px;
+        padding-top: 14px;
+      }
+
+      .add-feature-row {
+        flex-wrap: wrap;
+      }
+
+      .feat-tag-sel {
+        width: 100%;
+      }
+
+      .feat-input {
+        width: 100%;
+      }
+
+      .stats-bar {
+        gap: 7px;
+      }
+
+      .stat-pill {
+        padding: 6px 12px;
+      }
+
+      #projects-grid {
+        flex-direction: column;
+        overflow-x: visible;
+      }
+
+      .search-input {
+        padding-right: 50px !important;
+      }
+
+      .filter-trigger span {
+        display: none;
+      }
+
+      .filter-trigger {
+        padding: 6px 10px;
+        right: 6px;
+      }
+
+      .filter-dropdown {
+        width: 180px;
+        right: -10px;
+      }
+
+      .kanban-column {
+        min-width: 100%;
+      }
+    }
+
+    /* ── SPLASH SCREEN ── */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    .splash-logo {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: splashIntro 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+        splashVibrate 0.1s infinite 0.8s;
+      text-shadow: 0 10px 40px rgba(61, 141, 255, 0.2);
+    }
+
+    @keyframes splashIntro {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+        filter: blur(10px);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0);
+      }
+    }
+
+    @keyframes splashVibrate {
+      0% {
+        transform: scale(1) translate(0, 0);
+      }
+
+      25% {
+        transform: scale(1.02) translate(1px, 1px);
+      }
+
+      50% {
+        transform: scale(1) translate(-1px, 1.5px);
+      }
+
+      75% {
+        transform: scale(1.02) translate(-1.5px, -1px);
+      }
+
+      100% {
+        transform: scale(1) translate(1px, -1px);
+      }
+    }
+
+
+    .splash-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="splash-screen">
+    <div class="splash-logo">PROJE YÖNETİMİ</div>
+  </div>
+
+  <div id="drag-trash-zone" class="trash-zone" ondragover="allowProjectDrop(event)"
+    ondragenter="this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')"
+    ondrop="handleTrashDrop(event)">
+    <i class="fa fa-trash-can"></i> <span id="trash-text">PROJEYİ SİLMEK İÇİN BURAYA BIRAK</span>
+  </div>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <div id="app">
+
+    <header>
+      <div class="logo-line">
+        <h1>PROJE YÖNETİMİ</h1>
+      </div>
+    </header>
+
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <i class="fa fa-search"></i>
+      <input type="text" class="search-input" id="search-input" placeholder="Proje ara..."
+        onfocus="this.parentElement.classList.add('active')" />
+      <div class="filter-trigger" id="date-filter-trigger" onclick="toggleDateDropdown(event)">
+
+        <span id="active-filter-text">Oluşturulma</span>
+      </div>
+      <div class="filter-dropdown" id="date-filter-dropdown">
+        <div class="filter-opt active" onclick="setDateFilter('all')">Hepsi</div>
+        <div class="filter-opt" onclick="setDateFilter('today')">Bugün</div>
+        <div class="filter-opt" onclick="setDateFilter('yesterday')">Dün</div>
+        <div class="filter-opt" onclick="setDateFilter('week')">Bu Hafta</div>
+        <div class="filter-opt" onclick="setDateFilter('prevWeek')">Geçen Hafta</div>
+        <div class="filter-opt" onclick="setDateFilter('month')">Bu Ay</div>
+        <div class="filter-opt" onclick="setDateFilter('3months')">Son 3 Ay</div>
+        <div class="filter-opt" onclick="setDateFilter('6months')">Son 6 Ay</div>
+        <div class="filter-opt" onclick="setDateFilter('year')">Son 1 Sene</div>
+        <div style="height:1px; background:var(--border); margin:4px 8px;"></div>
+        <div class="filter-opt" onclick="openCustomCalendar()">Özel Tarih...</div>
+      </div>
+    </div>
+
+    <!-- Search Results Badge -->
+    <div id="search-results-container">
+      <div class="results-badge">
+        <i class="fa fa-magnifying-glass" style="font-size: 0.8rem; opacity: 0.7;"></i>
+        <span>Bulunan Proje:</span>
+        <span class="count" id="result-count">0</span>
+        <div class="clear-search" id="clear-search-btn" onclick="clearAllFilters()" title="Filtreleri Temizle">
+          <i class="fa fa-circle-xmark"></i>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Add Button -->
+    <button class="add-btn" id="add-project-btn">
+      <i class="fa fa-plus"></i> YENİ PROJE EKLE
+    </button>
+
+    <!-- Projects -->
+    <div id="projects-grid"></div>
+
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-title" id="modal-title">YENİ PROJE</div>
+      <div class="form-group">
+        <label class="form-label">Proje Adı</label>
+        <input type="text" class="form-input" id="proj-name" placeholder="Proje adını gir..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Durum</label>
+        <select class="form-select" id="proj-status">
+          <option value="planned">📋 Planlanan</option>
+          <option value="progress">🔥 Geliştiriliyor</option>
+          <option value="done">✅ Tamamlandı</option>
+          <option value="updated">🔄 Güncellenecekler</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Açıklama / Notlar</label>
+        <textarea class="form-textarea" id="proj-desc" placeholder="Proje hakkında notlar..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="modal-cancel">İPTAL</button>
+        <button class="btn-primary" id="modal-save">KAYDET</button>
+      </div>
+    </div>
+  </div>
+  <!-- View Project Modal -->
+  <div class="modal-overlay" id="view-modal-overlay">
+    <div class="modal view-fullscreen">
+      <div class="view-modal-content" id="view-modal-data">
+        <!-- Dynamic Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Calendar Modal -->
+  <div id="calendar-modal">
+    <div class="calendar-container">
+      <div class="cal-header">
+        <div class="cal-title" id="cal-month-year">Mayıs 2026</div>
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="changeCalMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+          <button class="cal-nav-btn" onclick="changeCalMonth(1)"><i class="fa fa-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid">
+        <!-- Calendar Days -->
+      </div>
+      <div class="cal-footer">
+        <button class="cal-btn cal-btn-cancel" onclick="closeCustomCalendar()">İptal</button>
+        <button class="cal-btn cal-btn-apply" onclick="applyCustomDate()">Uygula</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // ── DATA ──────────────────────────────────────────
+    const STORAGE_KEY = 'mobilprojeler_v1';
+    let projects = [];
+    let editingId = null;
+    let searchQuery = '';
+    let currentDateFilter = 'all'; // all, today, yesterday, week, prevWeek, month, 3months, 6months, year, custom
+    let customDateRange = null; // { start: timestamp, end: timestamp }
+
+    function load() {
+      try {
+        projects = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch { projects = []; }
+    }
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    }
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+    // ── RENDER ────────────────────────────────────────
+    const grid = document.getElementById('projects-grid');
+
+    function renderAll() {
+      updateStats();
+
+      const statuses = ['planned', 'progress', 'done', 'updated'];
+      grid.innerHTML = '';
+
+      statuses.forEach(status => {
+        const meta = statusMeta[status];
+        const filtered = projects.filter(p => {
+          const matchFilter = p.status === status;
+          const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+          let matchDate = true;
+          if (currentDateFilter !== 'all') {
+            matchDate = checkDateMatch(p.createdAt, currentDateFilter);
+          }
+
+          return matchFilter && matchSearch && matchDate;
+        });
+
+        const column = document.createElement('div');
+        column.className = `kanban-column ${status}-col`;
+        column.setAttribute('ondragover', 'allowProjectDrop(event)');
+        column.setAttribute('ondragenter', 'handleProjectDragEnter(event)');
+        column.setAttribute('ondragleave', 'handleProjectDragLeave(event)');
+        column.setAttribute('ondrop', `handleProjectDrop(event, '${status}')`);
+        column.innerHTML = `
+        <div class="column-header">
+          <div class="column-title ${status}-text">${meta.label}</div>
+          <div class="column-count">${filtered.length}</div>
+        </div>
+        <div class="column-body" id="col-${status}"></div>
+      `;
+
+        const colBody = column.querySelector('.column-body');
+        if (filtered.length === 0) {
+          colBody.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--muted); font-size: 0.7rem; opacity: 0.5;">Henüz yok</div>`;
+        } else {
+          filtered.forEach((p, idx) => {
+            const card = buildCard(p);
+            card.style.animationDelay = `${idx * 0.05}s`;
+            colBody.appendChild(card);
+          });
+        }
+        grid.appendChild(column);
+      });
+
+      updateResultCount();
+    }
+
+    function updateResultCount() {
+      const activeProjects = projects.filter(p => {
+        const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+        let matchDate = true;
+        if (currentDateFilter !== 'all') {
+          matchDate = checkDateMatch(p.createdAt, currentDateFilter);
+        }
+        return matchSearch && matchDate;
+      });
+
+      const container = document.getElementById('search-results-container');
+      const countEl = document.getElementById('result-count');
+      const isFiltering = searchQuery.length > 0 || currentDateFilter !== 'all';
+
+      if (isFiltering) {
+        container.style.display = 'flex';
+        countEl.textContent = activeProjects.length;
+      } else {
+        container.style.display = 'none';
+      }
+    }
+
+    function checkDateMatch(ts, filter) {
+      if (!ts) return false;
+      const d = new Date(ts);
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const tomorrowStart = todayStart + 86400000;
+      const yesterdayStart = todayStart - 86400000;
+
+      switch (filter) {
+        case 'today': return ts >= todayStart && ts < tomorrowStart;
+        case 'yesterday': return ts >= yesterdayStart && ts < todayStart;
+        case 'week': {
+          const day = now.getDay() || 7;
+          const mondayStart = todayStart - (day - 1) * 86400000;
+          return ts >= mondayStart;
+        }
+        case 'prevWeek': {
+          const day = now.getDay() || 7;
+          const lastMondayStart = todayStart - (day - 1 + 7) * 86400000;
+          const thisMondayStart = todayStart - (day - 1) * 86400000;
+          return ts >= lastMondayStart && ts < thisMondayStart;
+        }
+        case 'month': return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        case '3months': {
+          const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate()).getTime();
+          return ts >= threeMonthsAgo;
+        }
+        case '6months': {
+          const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate()).getTime();
+          return ts >= sixMonthsAgo;
+        }
+        case 'year': {
+          const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).getTime();
+          return ts >= yearAgo;
+        }
+        case 'custom': {
+          if (!customDateRange) return true;
+          return ts >= customDateRange.start && ts <= customDateRange.end;
+        }
+        default: return true;
+      }
+    }
+
+    function toggleDateDropdown(e) {
+      if (e) e.stopPropagation();
+      const dropdown = document.getElementById('date-filter-dropdown');
+      const trigger = document.getElementById('date-filter-trigger');
+      dropdown.classList.toggle('open');
+      trigger.classList.toggle('active', dropdown.classList.contains('open'));
+    }
+
+    function setDateFilter(type) {
+      currentDateFilter = type;
+      const opts = document.querySelectorAll('.filter-opt');
+      opts.forEach(opt => {
+        opt.classList.remove('active');
+        if (opt.textContent.toLowerCase().includes(getFilterLabel(type).toLowerCase())) opt.classList.add('active');
+        // Handle 'Hepsi' specially
+        if (type === 'all' && opt.textContent === 'Hepsi') opt.classList.add('active');
+      });
+
+      // Update trigger text
+      const label = getFilterLabel(type);
+      document.getElementById('active-filter-text').textContent = label === 'Hepsi' ? 'Oluşturulma' : label;
+
+      const dropdown = document.getElementById('date-filter-dropdown');
+      dropdown.classList.remove('open');
+      document.getElementById('date-filter-trigger').classList.remove('active');
+
+      renderAll();
+    }
+
+    function getFilterLabel(type) {
+      const labels = {
+        all: 'Hepsi', today: 'Bugün', yesterday: 'Dün', week: 'Bu Hafta',
+        prevWeek: 'Geçen Hafta', month: 'Bu Ay', '3months': 'Son 3 Ay',
+        '6months': 'Son 6 Ay', year: 'Son 1 Sene', custom: 'Özel Tarih'
+      };
+      return labels[type] || 'Oluşturulma';
+    }
+
+    function clearAllFilters() {
+      searchQuery = '';
+      document.getElementById('search-input').value = '';
+      setDateFilter('all');
+    }
+
+    // ── CALENDAR LOGIC ──
+    let calViewDate = new Date();
+    let calSelectedDate = null;
+
+    function openCustomCalendar() {
+      toggleDateDropdown();
+      document.getElementById('calendar-modal').style.display = 'flex';
+      calViewDate = new Date();
+      renderCalendar();
+    }
+
+    function closeCustomCalendar() {
+      document.getElementById('calendar-modal').style.display = 'none';
+    }
+
+    function changeCalMonth(delta) {
+      calViewDate.setMonth(calViewDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('cal-grid');
+      const title = document.getElementById('cal-month-year');
+
+      const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Aralık", "Eylül", "Ekim", "Kasım", "Aralık"];
+      // Fix month array indexing (D'oh, Dec was repeated)
+      const correctMonths = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+      title.textContent = `${correctMonths[calViewDate.getMonth()]} ${calViewDate.getFullYear()}`;
+
+      grid.innerHTML = '';
+      const weekdays = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"];
+      weekdays.forEach(w => grid.innerHTML += `<div class="cal-weekday">${w}</div>`);
+
+      const firstDay = new Date(calViewDate.getFullYear(), calViewDate.getMonth(), 1).getDay() || 7;
+      const daysInMonth = new Date(calViewDate.getFullYear(), calViewDate.getMonth() + 1, 0).getDate();
+
+      for (let i = 1; i < firstDay; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
+
+      const today = new Date();
+      for (let d = 1; d <= daysInMonth; d++) {
+        const isToday = d === today.getDate() && calViewDate.getMonth() === today.getMonth() && calViewDate.getFullYear() === today.getFullYear();
+        const isSelected = calSelectedDate && d === calSelectedDate.getDate() && calViewDate.getMonth() === calSelectedDate.getMonth() && calViewDate.getFullYear() === calSelectedDate.getFullYear();
+
+        grid.innerHTML += `<div class="cal-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="selectCalDate(${d})">${d}</div>`;
+      }
+    }
+
+    function selectCalDate(day) {
+      calSelectedDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth(), day);
+      renderCalendar();
+    }
+
+    function applyCustomDate() {
+      if (!calSelectedDate) { toast('Lütfen bir tarih seçin', 'var(--orange)'); return; }
+
+      const start = new Date(calSelectedDate.getFullYear(), calSelectedDate.getMonth(), calSelectedDate.getDate()).getTime();
+      const end = start + 86399999;
+
+      customDateRange = { start, end };
+      currentDateFilter = 'custom';
+
+      const label = `${calSelectedDate.getDate()} ${getFilterLabel('month').replace('Bu Ay', '')} ${calSelectedDate.getFullYear()}`;
+      // Just use the selected date as label
+      const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+      const displayLabel = `${calSelectedDate.getDate()} ${months[calSelectedDate.getMonth()]}`;
+
+      document.getElementById('active-filter-text').textContent = displayLabel;
+      closeCustomCalendar();
+      renderAll();
+    }
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('date-filter-dropdown');
+      const trigger = document.getElementById('date-filter-trigger');
+      const input = document.getElementById('search-input');
+
+      if (!dropdown.contains(e.target) && !trigger.contains(e.target)) {
+        dropdown.classList.remove('open');
+        trigger.classList.remove('active');
+      }
+
+      if (!document.querySelector('.search-wrap').contains(e.target)) {
+        document.querySelector('.search-wrap').classList.remove('active');
+      }
+    });
+
+    function updateStats() {
+      const sDone = document.getElementById('stat-done');
+      if (sDone) sDone.textContent = projects.filter(p => p.status === 'done').length;
+      const sProg = document.getElementById('stat-prog');
+      if (sProg) sProg.textContent = projects.filter(p => p.status === 'progress').length;
+      const sPlan = document.getElementById('stat-plan');
+      if (sPlan) sPlan.textContent = projects.filter(p => p.status === 'planned').length;
+      const sUpd = document.getElementById('stat-upd');
+      if (sUpd) sUpd.textContent = projects.filter(p => p.status === 'updated').length;
+    }
+
+    const statusMeta = {
+      planned: { label: 'Planlanan', cls: 'badge-planned' },
+      progress: { label: 'Geliştiriliyor', cls: 'badge-progress' },
+      done: { label: 'Tamamlandı', cls: 'badge-done' },
+      updated: { label: 'Güncellenecek', cls: 'badge-updated' },
+    };
+
+    const tagMeta = {
+      eksik: { label: 'ASKIDA', cls: 'tag-eksik' },
+      yapilacak: { label: 'YAPILACAK', cls: 'tag-yapilacak' },
+      yapildi: { label: 'YAPILDI', cls: 'tag-yapildi' },
+    };
+
+    function buildCard(p) {
+      const el = document.createElement('div');
+      el.className = 'project-card';
+      el.dataset.id = p.id;
+      el.draggable = true;
+      el.onclick = () => openViewModal(p.id);
+      el.ondragstart = (e) => handleProjectDragStart(e);
+      el.ondragover = (e) => handleProjectDragOverItem(e);
+      el.ondragend = (e) => handleProjectDragEnd(e);
+
+      el.innerHTML = `
+      <div class="card-header">
+        <span class="project-name">${esc(p.name)}</span>
+      </div>
+    `;
+      return el;
+    }
+
+    function openViewModal(id) {
+      const p = projects.find(x => x.id === id);
+      if (!p) return;
+
+      const meta = statusMeta[p.status] || statusMeta.progress;
+      const features = p.features || [];
+      const done = features.filter(f => f.done || f.tag === 'yapildi').length;
+      const total = features.length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+
+      const viewOverlay = document.getElementById('view-modal-overlay');
+      const viewData = document.getElementById('view-modal-data');
+
+      viewData.innerHTML = `
+      <div class="view-modal-header">
+        <div class="view-modal-title-area">
+          <div class="view-modal-name" id="view-modal-name-${p.id}" ondblclick="startEditProjectName('${p.id}')" title="Düzenlemek için çift tıkla">${esc(p.name)}</div>
+        </div>
+        <div class="view-modal-actions">
+          <div class="view-modal-status">
+            <span class="status-badge ${meta.cls}" onclick="toggleStatusPicker(event, '${p.id}')" style="cursor:pointer;" title="Durumu Değiştir">${meta.label}</span>
+            <div class="status-picker" id="status-picker-${p.id}" style="display:none;">
+              ${Object.entries(statusMeta).map(([k, m]) => `
+                <div class="picker-item" onclick="changeStatus('${p.id}', '${k}')">
+                  <span class="picker-dot" style="background:${m.cls.includes('done') ? 'var(--green)' : m.cls.includes('progress') ? 'var(--yellow)' : m.cls.includes('planned') ? 'var(--blue)' : 'var(--purple)'}"></span>
+                  ${m.label}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-scroll-area">
+        <div class="project-desc" id="desc-box-${p.id}" ondblclick="startEditDesc('${p.id}')" title="Düzenlemek için çift tıkla" style="text-align:left;">${p.desc ? esc(p.desc) : '<span style="opacity:0.4; font-style:italic;">Açıklama yok...</span>'}</div>
+        
+        <div class="feat-input-group" id="feat-group-${p.id}">
+          <input type="text" class="feat-input" id="feat-inp-${p.id}" 
+                 placeholder="Yeni özellik veya görev ekle..." 
+                 oninput="handleFeatInput(this, '${p.id}')"
+                 onkeydown="if(event.key==='Enter') addFeature('${p.id}', true)" />
+          <div class="feat-input-actions">
+            <div class="custom-tag-wrap">
+              <div class="tag-trigger" id="tag-trigger-${p.id}" onclick="toggleTagMenu(event, '${p.id}')" data-tag="yapilacak" data-prio="orta">
+                <span style="color:var(--orange)">● YAPILACAK</span>
+              </div>
+              <div class="tag-menu" id="tag-menu-${p.id}">
+                <div class="tag-opt yapilacak" style="color:var(--orange)">
+                  <span>● YAPILACAK</span>
+                  <i class="fa fa-chevron-right"></i>
+                  <div class="prio-sub-menu">
+                    <div class="prio-sub-opt rahat" onclick="selectTagPrio('${p.id}', 'yapilacak', 'rahat')">Rahat</div>
+                    <div class="prio-sub-opt orta" onclick="selectTagPrio('${p.id}', 'yapilacak', 'orta')">Orta</div>
+                    <div class="prio-sub-opt ciddi" onclick="selectTagPrio('${p.id}', 'yapilacak', 'ciddi')">Ciddi</div>
+                  </div>
+                </div>
+                <div class="tag-opt" style="color:var(--red)" onclick="selectTagOnly('${p.id}', 'eksik')">● ASKIDA</div>
+                <div class="tag-opt" style="color:var(--green)" onclick="selectTagOnly('${p.id}', 'yapildi')">● YAPILDI</div>
+              </div>
+            </div>
+            <button class="feat-add-btn" onclick="addFeature('${p.id}', true)">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="section-label"><i class="fa fa-list-check" style="color:var(--purple)"></i> PROJE GÖREVLERİ</div>
+        
+        <div class="feat-kanban-grid">
+          <!-- Column: Yapılacak -->
+          <div class="feat-col col-yapilacak" ondragover="allowDrop(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'yapilacak', '${p.id}')">
+            <div class="feat-col-header"><span class="dot" style="background:var(--orange)"></span>Yapılacak</div>
+            <div class="feat-col-list" id="col-list-yapilacak-${p.id}">
+              ${features.filter(f => f.tag === 'yapilacak').map(f => buildFeatureHTML(f, p.id)).join('')}
+            </div>
+          </div>
+          <!-- Column: Eksik -->
+          <div class="feat-col col-eksik" ondragover="allowDrop(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'eksik', '${p.id}')">
+            <div class="feat-col-header"><span class="dot" style="background:var(--red)"></span>ASKIDA</div>
+            <div class="feat-col-list" id="col-list-eksik-${p.id}">
+              ${features.filter(f => f.tag === 'eksik').map(f => buildFeatureHTML(f, p.id)).join('')}
+            </div>
+          </div>
+          <!-- Column: Yapıldı -->
+          <div class="feat-col col-yapildi" ondragover="allowDrop(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'yapildi', '${p.id}')">
+            <div class="feat-col-header"><span class="dot" style="background:var(--green)"></span>Yapıldı</div>
+            <div class="feat-col-list" id="col-list-yapildi-${p.id}">
+              ${features.filter(f => f.tag === 'yapildi').map(f => buildFeatureHTML(f, p.id)).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-modal-footer">
+        <div class="created-at-info">
+          Oluşturulma: ${formatDate(p.createdAt)}
+        </div>
+      </div>
+    `;
+
+      viewOverlay.classList.add('open');
+    }
+
+    function formatDate(ts) {
+      if (!ts) return 'Bilinmiyor';
+      const d = new Date(ts);
+      const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} - ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    function toggleStatusPicker(e, pid) {
+      e.stopPropagation();
+      const picker = document.getElementById('status-picker-' + pid);
+      const all = document.querySelectorAll('.status-picker');
+      all.forEach(p => { if (p.id !== picker.id) p.style.display = 'none'; });
+      picker.style.display = picker.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    function changeStatus(pid, newStatus) {
+      const p = projects.find(x => x.id === pid);
+      if (p) {
+        p.status = newStatus;
+        save();
+        renderAll();
+        openViewModal(pid); // Refresh view modal
+        toast('Durum güncellendi', 'var(--blue)');
+      }
+    }
+
+    // Consolidated global click listener
+    document.addEventListener('click', (e) => {
+      // Close all mini modals/pickers if clicking outside
+      if (!e.target.closest('.status-badge') && !e.target.closest('.status-picker')) {
+        document.querySelectorAll('.status-picker').forEach(p => p.style.display = 'none');
+      }
+      if (!e.target.closest('.tag-trigger') && !e.target.closest('.tag-menu')) {
+        document.querySelectorAll('.tag-menu').forEach(m => m.classList.remove('open'));
+      }
+      if (!e.target.closest('.priority-trigger') && !e.target.closest('.priority-menu')) {
+        document.querySelectorAll('.priority-menu').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.priority-trigger').forEach(t => t.classList.remove('active'));
+      }
+    });
+
+    function startEditDesc(pid) {
+      const box = document.getElementById('desc-box-' + pid);
+      if (!box || box.classList.contains('editing')) return;
+
+      const p = projects.find(x => x.id === pid);
+      const currentVal = p ? (p.desc || '') : '';
+
+      box.classList.add('editing');
+      box.innerHTML = `<textarea class="desc-edit-area" id="desc-edit-${pid}" placeholder="Açıklama giriniz...">${esc(currentVal)}</textarea>`;
+
+      const textarea = document.getElementById('desc-edit-' + pid);
+      textarea.focus();
+
+      // Auto height for textarea
+      const adjustHeight = () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      };
+      adjustHeight();
+      textarea.oninput = adjustHeight;
+
+      textarea.onblur = () => saveDesc(pid);
+      textarea.onkeydown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); textarea.blur(); }
+        if (e.key === 'Escape') {
+          box.classList.remove('editing');
+          box.innerHTML = p.desc ? esc(p.desc) : '<span style="opacity:0.4; font-style:italic;">Açıklama yok...</span>';
+        }
+      };
+    }
+
+    function startEditProjectName(pid) {
+      const el = document.getElementById('view-modal-name-' + pid);
+      if (!el || el.contentEditable === 'true') return;
+
+      el.contentEditable = 'true';
+      el.focus();
+
+      // Move cursor to end
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+
+      el.onblur = () => saveProjectName(pid);
+      el.onkeydown = (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+        if (e.key === 'Escape') {
+          const p = projects.find(x => x.id === pid);
+          el.textContent = p ? p.name : el.textContent;
+          el.contentEditable = 'false';
+        }
+      };
+    }
+
+    function saveProjectName(pid) {
+      const el = document.getElementById('view-modal-name-' + pid);
+      if (!el) return;
+
+      const newName = el.textContent.trim();
+      const p = projects.find(x => x.id === pid);
+
+      if (!newName) {
+        el.textContent = p ? p.name : '';
+        el.contentEditable = 'false';
+        return;
+      }
+
+      if (p && p.name !== newName) {
+        p.name = newName;
+        save();
+        renderAll();
+        toast('Proje ismi güncellendi', 'var(--blue)');
+      }
+      el.contentEditable = 'false';
+    }
+
+    function saveDesc(pid) {
+      const textarea = document.getElementById('desc-edit-' + pid);
+      if (!textarea) return;
+
+      const newVal = textarea.value.trim();
+      const p = projects.find(x => x.id === pid);
+      if (p) {
+        p.desc = newVal;
+        save();
+
+        const box = document.getElementById('desc-box-' + pid);
+        if (box) {
+          box.classList.remove('editing');
+          box.innerHTML = p.desc ? esc(p.desc) : '<span style="opacity:0.4; font-style:italic;">Açıklama yok...</span>';
+        }
+        toast('Açıklama güncellendi', 'var(--blue)');
+      }
+    }
+
+    function closeViewModal() {
+      document.getElementById('view-modal-overlay').classList.remove('open');
+    }
+
+    // Close view modal on ESC
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeViewModal(); });
+    document.getElementById('view-modal-overlay').onclick = e => { if (e.target.id === 'view-modal-overlay') closeViewModal(); };
+
+    function buildFeatureHTML(f, pid) {
+      const isDone = f.done || f.tag === 'yapildi';
+      const prioClass = f.priority ? `prio-${f.priority}` : '';
+      return `
+      <div class="feature-item ${prioClass}" data-fid="${f.id}" data-pid="${pid}" data-tag="${f.tag}" data-fulltext="${esc(f.text)}" draggable="true" 
+           onpointerdown="this.style.cursor='grabbing'" onpointerup="this.style.cursor='grab'"
+           ondragstart="handleDragStart(event)"
+           ondragover="handleDragOverItem(event)"
+           ondragend="handleDragEnd(event)"
+           ondblclick="showFullFeatureText('${pid}', '${f.id}')"
+           title="Tamamını görmek için çift tıkla">
+        <span class="feature-text ${isDone ? 'done-text' : ''}">${esc(f.text)}</span>
+      </div>`;
+    }
+
+
+    function esc(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Enter on feat input
+    grid.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.classList.contains('feat-input')) {
+        const pid = e.target.id.replace('feat-inp-', '');
+        addFeature(pid);
+      }
+    });
+
+    function addFeature(pid, fromModal = false) {
+      const inp = document.getElementById('feat-inp-' + pid);
+      const tagSel = document.getElementById('feat-tag-' + pid);
+      const text = inp.value.trim();
+      if (!text) { inp.focus(); return; }
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      if (!p.features) p.features = [];
+      const trigger = document.getElementById('tag-trigger-' + pid);
+      const tag = trigger ? trigger.dataset.tag : 'yapilacak';
+      const priority = trigger ? trigger.dataset.prio : 'orta';
+      const feat = { id: uid(), text, tag, done: tag === 'yapildi', priority };
+      p.features.push(feat);
+      save();
+      inp.value = '';
+      inp.focus();
+
+      // reset active state
+      const group = document.getElementById('feat-group-' + pid);
+      if (group) group.classList.remove('active');
+
+      if (fromModal) {
+        const list = document.getElementById(`col-list-${feat.tag}-${pid}`);
+        if (list) list.insertAdjacentHTML('beforeend', buildFeatureHTML(feat, pid));
+      } else {
+        updateProgressBar(pid);
+      }
+      updateStats();
+      toast('Özellik eklendi', 'var(--green)');
+    }
+
+    function handleFeatInput(inp, pid) {
+      const group = document.getElementById('feat-group-' + pid);
+      if (!group) return;
+      if (inp.value.trim().length > 0) {
+        group.classList.add('active');
+      } else {
+        group.classList.remove('active');
+      }
+    }
+
+    // ── PROJECT DRAG & DROP ──────────────────────────
+    let draggingProjectId = null;
+    let draggingProjectStatus = null;
+
+    function handleProjectDragStart(e) {
+      draggingProjectId = e.target.dataset.id;
+      const p = projects.find(x => x.id === draggingProjectId);
+      draggingProjectStatus = p ? p.status : null;
+      e.dataTransfer.setData('pid', draggingProjectId);
+      e.target.classList.add('dragging');
+      // Show trash zone
+      const tz = document.getElementById('drag-trash-zone');
+      const tt = document.getElementById('trash-text');
+      if (tt) tt.textContent = 'PROJEYİ SİLMEK İÇİN BURAYA BIRAK';
+      if (tz) tz.classList.add('visible');
+    }
+
+    function handleProjectDragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
+      // Hide trash zone
+      const tz = document.getElementById('drag-trash-zone');
+      if (tz) tz.classList.remove('visible', 'drag-over');
+    }
+
+    function allowProjectDrop(e) {
+      e.preventDefault();
+    }
+
+    function handleProjectDragEnter(e) {
+      const col = e.target.closest('.kanban-column');
+      if (!col) return;
+      const colStatus = col.querySelector('.column-body').id.replace('col-', '');
+      if (draggingProjectStatus !== colStatus) {
+        col.classList.add('drag-over');
+      }
+    }
+
+    function handleProjectDragLeave(e) {
+      const col = e.target.closest('.kanban-column');
+      if (col && !col.contains(e.relatedTarget)) {
+        col.classList.remove('drag-over');
+      }
+    }
+
+    function handleProjectDragOverItem(e) {
+      e.preventDefault();
+      const item = e.target.closest('.project-card');
+      if (!item || item.dataset.id === draggingProjectId) return;
+
+      const p = projects.find(x => x.id === item.dataset.id);
+      if (!p || p.status !== draggingProjectStatus) return;
+
+      const list = item.parentElement;
+      const items = [...list.querySelectorAll('.project-card')];
+      const draggingItem = list.querySelector('.dragging');
+      if (!draggingItem) return;
+
+      const currPos = items.indexOf(draggingItem);
+      const hoverPos = items.indexOf(item);
+
+      if (currPos < hoverPos) {
+        item.after(draggingItem);
+      } else {
+        item.before(draggingItem);
+      }
+    }
+
+    function handleProjectDrop(e, newStatus) {
+      e.preventDefault();
+      const col = e.target.closest('.kanban-column');
+      if (col) col.classList.remove('drag-over');
+
+      const pid = e.dataTransfer.getData('pid');
+      const pIdx = projects.findIndex(x => x.id === pid);
+      if (pIdx === -1) return;
+      const p = projects[pIdx];
+
+      if (draggingProjectStatus !== newStatus) {
+        projects.splice(pIdx, 1);
+        p.status = newStatus;
+        projects.unshift(p);
+      } else {
+        const list = document.getElementById(`col-${newStatus}`);
+        const newOrderIds = [...list.querySelectorAll('.project-card')].map(i => i.dataset.id);
+        const thisColumnProjects = newOrderIds.map(id => projects.find(x => x.id === id));
+
+        const indices = [];
+        projects.forEach((proj, idx) => {
+          if (proj.status === newStatus) indices.push(idx);
+        });
+
+        thisColumnProjects.forEach((proj, i) => {
+          projects[indices[i]] = proj;
+        });
+      }
+
+      save();
+      renderAll();
+      toast('Sıralama güncellendi', 'var(--blue)');
+    }
+
+    function handleTrashDrop(e) {
+      e.preventDefault();
+      const pid = e.dataTransfer.getData('pid');
+      const fid = e.dataTransfer.getData('fid');
+
+      if (fid) {
+        deleteFeature(pid, fid);
+      } else if (pid) {
+        deleteProject(pid);
+      }
+
+      const tz = document.getElementById('drag-trash-zone');
+      if (tz) tz.classList.remove('visible', 'drag-over');
+    }
+
+    // ── FEATURE DRAG & DROP ──────────────────────────
+
+    function toggleFeatureStatusPicker(e, pid, fid) {
+      // picker removed for drag and drop
+    }
+
+    let draggingFid = null;
+    let draggingTag = null;
+
+    function handleDragStart(e) {
+      draggingFid = e.target.dataset.fid;
+      draggingTag = e.target.dataset.tag;
+      e.dataTransfer.setData('fid', draggingFid);
+      e.dataTransfer.setData('pid', e.target.dataset.pid);
+      e.target.classList.add('dragging');
+      // Show trash zone
+      const tz = document.getElementById('drag-trash-zone');
+      const tt = document.getElementById('trash-text');
+      if (tt) tt.textContent = 'GÖREVİ SİLMEK İÇİN BURAYA BIRAK';
+      if (tz) tz.classList.add('visible');
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.feat-col').forEach(c => c.classList.remove('drag-over'));
+      // Hide trash zone
+      const tz = document.getElementById('drag-trash-zone');
+      if (tz) tz.classList.remove('visible', 'drag-over');
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+    }
+
+    function handleDragEnter(e) {
+      const col = e.target.closest('.feat-col');
+      if (!col) return;
+
+      // Only show overlay if dragging to a DIFFERENT column
+      const colTag = col.getAttribute('ondrop').match(/'([^']+)'/)[1];
+      if (draggingTag !== colTag) {
+        col.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      const col = e.target.closest('.feat-col');
+      if (col && !col.contains(e.relatedTarget)) {
+        col.classList.remove('drag-over');
+      }
+    }
+
+    function handleDragOverItem(e) {
+      e.preventDefault();
+      const item = e.target.closest('.feature-item');
+      if (!item || item.dataset.fid === draggingFid) return;
+      if (item.dataset.tag !== draggingTag) return; // Only sort in same column
+
+      const list = item.parentElement;
+      const items = [...list.querySelectorAll('.feature-item')];
+      const draggingItem = list.querySelector('.dragging');
+      if (!draggingItem) return;
+
+      const currPos = items.indexOf(draggingItem);
+      const hoverPos = items.indexOf(item);
+
+      if (currPos < hoverPos) {
+        item.after(draggingItem);
+      } else {
+        item.before(draggingItem);
+      }
+    }
+
+    function handleDrop(e, newTag, pid) {
+      e.preventDefault();
+      const col = e.target.closest('.feat-col');
+      if (col) col.classList.remove('drag-over');
+
+      const fid = e.dataTransfer.getData('fid');
+      const sourcePid = e.dataTransfer.getData('pid');
+      if (sourcePid !== pid) return;
+
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+
+      // If moved between columns
+      if (draggingTag !== newTag) {
+        const fIdx = p.features.findIndex(x => x.id === fid);
+        const f = p.features.splice(fIdx, 1)[0];
+        f.tag = newTag;
+        f.done = (newTag === 'yapildi');
+        // Move to top of list as requested
+        p.features.unshift(f);
+      } else {
+        // Reordering in same column (save order from DOM)
+        const list = document.getElementById(`col-list-${newTag}-${pid}`);
+        const newOrderIds = [...list.querySelectorAll('.feature-item')].map(i => i.dataset.fid);
+        const sortedFeatures = [];
+        newOrderIds.forEach(id => {
+          sortedFeatures.push(p.features.find(f => f.id === id));
+        });
+        // Also add features from other columns back
+        p.features.forEach(f => {
+          if (f.tag !== newTag) sortedFeatures.push(f);
+        });
+        p.features = sortedFeatures;
+      }
+
+      save();
+      openViewModal(pid);
+      updateProgressBar(pid);
+      updateStats();
+    }
+
+    function showFullFeatureText(pid, fid) {
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      const f = (p.features || []).find(x => x.id === fid);
+      if (!f) return;
+
+      const viewer = document.createElement('div');
+      viewer.id = 'full-feat-viewer';
+      viewer.style = `
+      position:fixed; inset:0; z-index:9999; 
+      background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);
+      display:flex; align-items:center; justify-content:center; padding:20px;
+      animation: fadeIn 0.2s ease-out;
+    `;
+
+      const saveAndClose = () => {
+        const ta = document.getElementById('modal-feat-edit');
+        if (ta) {
+          const newVal = ta.value.trim();
+          if (newVal && newVal !== f.text) {
+            f.text = newVal;
+            save();
+            const item = document.querySelector(`[data-fid="${fid}"]`);
+            if (item) item.querySelector('.feature-text').textContent = newVal;
+            toast('Görev güncellendi', 'var(--blue)');
+          }
+        }
+        viewer.remove();
+      };
+
+      viewer.onclick = (e) => { if (e.target === viewer) saveAndClose(); };
+
+      const content = document.createElement('div');
+      content.className = 'full-feat-content';
+      content.style = `
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:24px; padding:32px; max-width:650px; width:100%;
+      color:var(--text); font-family:'Space Mono', monospace; font-size:0.95rem;
+      line-height:1.7; box-shadow:0 30px 70px rgba(0,0,0,0.6);
+      position:relative; max-height:85vh; overflow-y:auto; text-align:left;
+      word-break:break-word; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    `;
+
+      const renderContent = (isEditing) => {
+        if (!isEditing) {
+          content.style.borderColor = 'var(--border)';
+          content.style.background = 'var(--bg2)';
+          content.style.boxShadow = '0 30px 70px rgba(0,0,0,0.6)';
+
+          const prioUI = f.tag === 'yapilacak' ? `
+            <div class="modal-prio-row" style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border)">
+              <div class="modal-prio-label" style="font-size:0.7rem; color:var(--text-dim); margin-bottom:8px;"></div>
+              <div class="modal-prio-btns" style="display:flex; gap:10px;">
+                <button class="modal-prio-btn rahat ${f.priority === 'rahat' ? 'active' : ''}" onclick="updateFgetPrio('${pid}','${fid}','rahat')" style="padding:5px 12px; border-radius:15px; border:1px solid var(--border); background:var(--bg3); cursor:pointer;">Rahat</button>
+                <button class="modal-prio-btn orta ${f.priority === 'orta' || !f.priority ? 'active' : ''}" onclick="updateFgetPrio('${pid}','${fid}','orta')" style="padding:5px 12px; border-radius:15px; border:1px solid var(--border); background:var(--bg3); cursor:pointer;">Orta</button>
+                <button class="modal-prio-btn ciddi ${f.priority === 'ciddi' ? 'active' : ''}" onclick="updateFgetPrio('${pid}','${fid}','ciddi')" style="padding:5px 12px; border-radius:15px; border:1px solid var(--border); background:var(--bg3); cursor:pointer;">Ciddi</button>
+              </div>
+            </div>
+          ` : '';
+
+          content.innerHTML = `
+            <div id="modal-feat-text" style="min-height:40px; white-space: pre-wrap;">${esc(f.text)}</div>
+            ${prioUI}
+          `;
+          content.ondblclick = () => { content.dataset.editing = 'true'; render(); };
+        } else {
+          content.style.borderColor = 'var(--blue)';
+          content.style.background = 'var(--bg3)';
+          content.style.boxShadow = '0 0 30px rgba(61, 141, 255, 0.15)';
+          content.innerHTML = `
+            <textarea id="modal-feat-edit" style="
+              width:100%; min-height:200px; background:transparent; border:none; outline:none;
+              color:var(--text); font-family:inherit; font-size:inherit; line-height:inherit;
+              resize:none; padding:0; display:block;
+            ">${esc(f.text)}</textarea>
+          `;
+          const ta = content.querySelector('#modal-feat-edit');
+          ta.focus();
+          ta.setSelectionRange(ta.value.length, ta.value.length);
+
+          ta.onkeydown = (ev) => {
+            if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); saveAndClose(); }
+            if (ev.key === 'Escape') { delete content.dataset.editing; render(); }
+          };
+          content.ondblclick = null;
+        }
+      };
+
+      window.updateFgetPrio = (pid, fid, pVal) => {
+        const p = projects.find(x => x.id === pid);
+        const f = p.features.find(x => x.id === fid);
+        f.priority = pVal;
+        save();
+        render(); // Refresh modal content
+        // Also refresh the background on the card in the main detail view
+        const card = document.querySelector(`[data-fid="${fid}"]`);
+        if (card) {
+          card.classList.remove('prio-rahat', 'prio-orta', 'prio-ciddi');
+          card.classList.add('prio-' + pVal);
+        }
+      };
+
+      const render = () => {
+        const isEd = content.dataset.editing === 'true';
+        renderContent(isEd);
+      };
+
+      render();
+      viewer.appendChild(content);
+      document.body.appendChild(viewer);
+    }
+
+    function toggleTagMenu(e, pid) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('tag-menu-' + pid);
+      if (!menu) return;
+
+      const isOpen = menu.classList.contains('open');
+
+      // Close all other tag menus
+      document.querySelectorAll('.tag-menu').forEach(m => m.classList.remove('open'));
+
+      if (!isOpen) {
+        menu.classList.add('open');
+      }
+    }
+
+    function selectTagPrio(pid, tag, prio) {
+      const trigger = document.getElementById('tag-trigger-' + pid);
+      const menu = document.getElementById('tag-menu-' + pid);
+
+      trigger.dataset.tag = tag;
+      trigger.dataset.prio = prio;
+
+      const tagLabel = tag.toUpperCase();
+      const prioLabel = prio.toUpperCase();
+      trigger.innerHTML = `<span style="color:var(--orange)">● ${tagLabel} - ${prioLabel}</span>`;
+
+      menu.classList.remove('open');
+      toast(`Öncelik: ${prio.charAt(0).toUpperCase() + prio.slice(1)}`, 'var(--orange)');
+    }
+
+
+
+    function selectTagOnly(pid, tag) {
+      const trigger = document.getElementById('tag-trigger-' + pid);
+      const menu = document.getElementById('tag-menu-' + pid);
+
+      trigger.dataset.tag = tag;
+      trigger.dataset.prio = ''; // Reset prio for non-yapilacak tags
+
+      const color = tag === 'eksik' ? 'var(--red)' : 'var(--green)';
+      const label = tag === 'yapildi' ? 'YAPILDI' : 'ASKIDA';
+
+      trigger.innerHTML = `<span style="color:${color}">● ${label}</span>`;
+
+      menu.classList.remove('open');
+    }
+
+    // Removed redundant global click listener (consolidated above)
+
+    function changeFeatureStatus(pid, fid, newTag) {
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      const f = (p.features || []).find(x => x.id === fid);
+      if (!f) return;
+
+      f.tag = newTag;
+      f.done = (newTag === 'yapildi');
+      save();
+
+      // Refresh modal to move item to correct column
+      openViewModal(pid);
+      updateProgressBar(pid);
+      updateStats();
+      toast('Görev durumu güncellendi', 'var(--blue)');
+    }
+
+    function toggleFeature(e, pid, fid) {
+      if (e) e.stopPropagation();
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      const f = (p.features || []).find(x => x.id === fid);
+      if (!f) return;
+
+      f.done = !f.done;
+      if (f.done) f.tag = 'yapildi';
+      else if (f.tag === 'yapildi') f.tag = 'yapilacak';
+      save();
+
+      // Always refresh modal to move item between kanban columns
+      openViewModal(pid);
+      updateProgressBar(pid);
+      updateStats();
+    }
+
+    function deleteFeature(pid, fid) {
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      const f = (p.features || []).find(x => x.id === fid);
+      if (!f) return;
+
+      if (!confirm(`"${f.text}" görevi silinsin mi?`)) return;
+
+      p.features = (p.features || []).filter(x => x.id !== fid);
+      save();
+      const item = document.querySelector(`[data-fid="${fid}"]`);
+      if (item) { item.style.opacity = '0'; item.style.transform = 'translateX(10px)'; item.style.transition = 'all 0.2s'; setTimeout(() => item.remove(), 200); }
+      updateProgressBar(pid);
+      updateStats();
+      toast('Görev silindi', 'var(--red)');
+    }
+
+    function startEditFeature(e, pid, fid) {
+      const item = e.target.closest('.feature-item');
+      if (!item || item.classList.contains('editing')) return;
+
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      const f = p.features.find(x => x.id === fid);
+      if (!f) return;
+
+      item.classList.add('editing');
+      item.draggable = false;
+      const textSpan = item.querySelector('.feature-text');
+      const currentVal = f.text;
+
+      textSpan.innerHTML = `<input type="text" class="feat-edit-input" id="feat-edit-${fid}" value="${esc(currentVal)}" />`;
+      const input = document.getElementById('feat-edit-' + fid);
+      input.focus();
+      input.select();
+
+      input.onblur = () => saveFeature(pid, fid);
+      input.onkeydown = (ev) => {
+        if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+        if (ev.key === 'Escape') {
+          item.classList.remove('editing');
+          item.draggable = true;
+          textSpan.innerHTML = esc(f.text);
+        }
+      };
+    }
+
+    function saveFeature(pid, fid) {
+      const input = document.getElementById('feat-edit-' + fid);
+      if (!input) return;
+
+      const newVal = input.value.trim();
+      const p = projects.find(x => x.id === pid);
+      if (!p) return;
+      const f = p.features.find(x => x.id === fid);
+
+      const item = document.querySelector(`[data-fid="${fid}"]`);
+      const textSpan = item ? item.querySelector('.feature-text') : null;
+
+      if (newVal && f) {
+        f.text = newVal;
+        save();
+        toast('Görev güncellendi', 'var(--blue)');
+      }
+
+      if (item && textSpan && f) {
+        item.classList.remove('editing');
+        item.draggable = true;
+        textSpan.innerHTML = esc(f.text);
+      }
+    }
+
+    function updateProgressBar(pid) {
+      // Progress is now only shown in the Details Modal (handled by updateModalProgressBar)
+    }
+
+    function deleteProject(id) {
+      const p = projects.find(x => x.id === id);
+      if (!p) return;
+      if (!confirm(`"${p.name}" silinsin mi?`)) return;
+      projects = projects.filter(x => x.id !== id);
+      save();
+      const card = document.querySelector(`.project-card[data-id="${id}"]`);
+      if (card) {
+        card.style.transition = 'all 0.3s'; card.style.opacity = '0'; card.style.transform = 'scale(0.95)';
+        setTimeout(() => { card.remove(); updateStats(); checkEmpty(); }, 300);
+      }
+      toast('Proje silindi', 'var(--red)');
+    }
+
+    function checkEmpty() {
+      if (document.querySelectorAll('.project-card').length === 0) renderAll();
+    }
+
+    // ── MODAL ─────────────────────────────────────────
+    const overlay = document.getElementById('modal-overlay');
+    const modalTitle = document.getElementById('modal-title');
+    const nameInp = document.getElementById('proj-name');
+    const statusSel = document.getElementById('proj-status');
+    const descInp = document.getElementById('proj-desc');
+
+    document.getElementById('add-project-btn').addEventListener('click', () => openModal());
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.getElementById('modal-save').addEventListener('click', saveProject);
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') saveProject(); });
+
+    function openModal() {
+      editingId = null;
+      modalTitle.textContent = 'YENİ PROJE';
+      nameInp.value = ''; statusSel.value = 'progress'; descInp.value = '';
+      overlay.classList.add('open');
+      setTimeout(() => nameInp.focus(), 100);
+    }
+
+    function openEdit(id) {
+      const p = projects.find(x => x.id === id);
+      if (!p) return;
+      editingId = id;
+      modalTitle.textContent = 'PROJEYİ DÜZENLE';
+      nameInp.value = p.name; statusSel.value = p.status; descInp.value = p.desc || '';
+      overlay.classList.add('open');
+      setTimeout(() => nameInp.focus(), 100);
+    }
+
+    function closeModal() { overlay.classList.remove('open'); editingId = null; }
+
+    function saveProject() {
+      const name = nameInp.value.trim();
+      if (!name) { nameInp.focus(); nameInp.style.borderColor = 'var(--red)'; setTimeout(() => nameInp.style.borderColor = '', 800); return; }
+      if (editingId) {
+        const p = projects.find(x => x.id === editingId);
+        if (p) { p.name = name; p.status = statusSel.value; p.desc = descInp.value.trim(); }
+        save(); renderAll(); toast('Proje güncellendi', 'var(--blue)');
+      } else {
+        const p = { id: uid(), name, status: statusSel.value, desc: descInp.value.trim(), features: [], createdAt: Date.now() };
+        projects.unshift(p);
+        save(); renderAll(); toast('Proje eklendi!', 'var(--green)');
+      }
+      closeModal();
+    }
+
+
+
+    // ── SEARCH ───────────────────────────────────────
+    document.getElementById('search-input').addEventListener('input', e => {
+      searchQuery = e.target.value;
+      renderAll();
+    });
+
+    // ── TOAST ────────────────────────────────────────
+    function toast(msg, color = 'var(--green)') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `<i class="fa fa-circle-check" style="color:${color}"></i>${msg}`;
+      c.appendChild(t);
+      setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 2200);
+    }
+
+    // ── INIT ─────────────────────────────────────────
+    // ── INITIALIZE ────────────────────────────────────
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) splash.classList.add('splash-hidden');
+      }, 1600);
+    });
+
+    load();
+    renderAll();
+  </script>
+</body>
+
+</html>
